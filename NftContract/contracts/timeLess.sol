@@ -4,13 +4,11 @@ pragma solidity 0.8.17;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract TimeLess is ERC721 {
-    // CONTRACT ADDRESS:
-    // 0x364e4F9582665c6BA551968dE199387D24fbfd4D
-    // https://goerli.etherscan.io/address/0x364e4F9582665c6BA551968dE199387D24fbfd4D#code
-
+    // DEPLOYED SMART CONTRACT ADDRESS: 0xf388F4A49c096918597D731d349E414c3e82b189
+    
     receive() external payable {}
 
-    event Bid(address indexed _highestBidder, uint8 _highestBid);
+    event Bid(address indexed highestBidder, uint32 bidTime, uint256 indexed highestBid, uint8 currentWeek);
 
     address payable public owner;
 
@@ -78,6 +76,7 @@ contract TimeLess is ERC721 {
         currentHighestBidder = msg.sender;
 
         bidsStore[msg.sender] = msg.value;
+        emit Bid(msg.sender, uint32(block.timestamp), msg.value, currentWeek);
     }
 
     /**
@@ -125,6 +124,13 @@ contract TimeLess is ERC721 {
 
         _mint(currentHighestBidder, currentWeek);
         reset();
+    }
+
+    /**
+     * @dev retrieve all the bids recieved and stored on blockchain
+     */
+    function getbids() external view returns (Bids[] memory) {
+        return bid;
     }
 
     /**
